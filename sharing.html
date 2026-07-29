@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sharing — Yiyue Zhang</title>
+<meta name="description" content="Recent work in binary analysis and AI security worth reading, with notes on why.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main class="shell">
+
+  <div class="rail" aria-hidden="true">
+    <span class="rail-label top">0x0000 &middot; low</span>
+    <span class="rail-cursor"></span>
+    <span class="rail-label bottom">high</span>
+  </div>
+
+  <header class="topbar">
+    <a class="mark" href="index.html">yiyue<span>@</span>skku</a>
+    <nav>
+      <a href="index.html">About</a>
+      <a href="cv.html">CV</a>
+      <!-- Hidden until the first paper lands. Uncomment the line below to bring it back.
+      <a href="publications.html">Publications</a>
+      -->
+      <a href="sharing.html" aria-current="page">Sharing</a>
+    </nav>
+  </header>
+
+  <section class="block" id="note">
+    <div class="offset">0x20b8<span class="flags">A</span></div>
+    <div class="body-col">
+      <h1 class="page-title">Sharing<span class="caret" aria-hidden="true"></span></h1>
+      <p class="standfirst">Things I've read recently at the intersection of binary analysis and AI, and why I think they matter. Added to when something is actually worth adding.</p>
+    </div>
+  </section>
+
+  <!-- ============ 0x0040 · measurement ============ -->
+  <section class="block reveal">
+    <div class="offset">0x2100<span class="flags">A</span></div>
+    <div class="body-col">
+      <p class="eyebrow">.note</p>
+      <p class="eyebrow-note">measurement</p>
+      <h2>We can't yet measure what we claim to measure</h2>
+
+      <div class="entry">
+        <p class="entry-meta">arXiv:2607.07738 &middot; Jul 2026 <span class="tag">benchmark</span></p>
+        <h3><a href="https://arxiv.org/abs/2607.07738">REFORGE: Benchmarking LLMs' Reverse Engineering Capabilities in Decompiled Binary Function Naming</a></h3>
+        <p>Koller and Schmidt argue the real obstacle to evaluating LLMs on binaries isn't model capability — it's whether you can reliably align a compiled function back to its source under optimization. Their pipeline tracks that provenance from C through compilation and DWARF, and the numbers are uncomfortable: the share of functions that can be evaluated with high confidence drops from 87.2% to 65.9% as optimization levels rise.</p>
+        <p>The consequence is worse than a lower score. If harder functions silently drop out of your evaluable set, unpaired comparisons make models look more robust to optimization than they are. That's survivorship bias sitting inside a benchmark, and it's the kind of bug you can't see from the leaderboard.</p>
+      </div>
+
+      <div class="entry">
+        <p class="entry-meta">AIWare 2026 <span class="tag">dataset</span></p>
+        <h3><a href="https://doi.org/10.1145/3805760.3814935">REBench: A Procedural, Fair-by-Construction Benchmark for LLMs on Stripped-Binary Types and Names</a></h3>
+        <p>The complementary move: instead of auditing existing evaluations, build a standard one. REBench consolidates datasets that RE papers had each been assembling independently, spanning x86, x64, ARM 32-bit, and MIPS 32-bit at optimization levels O0 through O3, normalized through a single decompiler.</p>
+        <p>Worth knowing about even if you don't use it. A field where every paper brings its own dataset can't compare results, and "we beat the baseline" means very little when the baseline was measured somewhere else.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 0x0080 · the human in the loop ============ -->
+  <section class="block reveal">
+    <div class="offset">0x2180<span class="flags">A</span></div>
+    <div class="body-col">
+      <p class="eyebrow">.note</p>
+      <p class="eyebrow-note">human factors</p>
+      <h2>The analyst is still the interesting variable</h2>
+
+      <div class="entry">
+        <p class="entry-meta">NDSS 2026 &middot; Best Paper <span class="tag">user study</span></p>
+        <h3><a href="https://eurecom-blog.medium.com/studying-human-llm-collaboration-in-software-reverse-engineering-9d222f58f93d">Decompiling the Synergy: An Empirical Study of Human-LLM Teaming in Software Reverse Engineering</a></h3>
+        <p>A team from EURECOM, Arizona State, and Padua ran what I believe is the first controlled study of AI assistance in reverse engineering: a survey of 153 practitioners to establish how the community actually uses LLMs, then a hands-on experiment on stripped CTF-style binaries. It won Best Paper at NDSS 2026.</p>
+        <p>The framing I keep coming back to is that the useful skill isn't avoiding the model or trusting it — it's being able to interrogate its output and notice when it's confidently wrong. That's a claim about training reverse engineers, not about training models, and almost nobody in this space is designing for it.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ 0x00C0 · threat landscape ============ -->
+  <section class="block reveal">
+    <div class="offset">0x2200<span class="flags">A</span></div>
+    <div class="body-col">
+      <p class="eyebrow">.note</p>
+      <p class="eyebrow-note">threat landscape</p>
+      <h2>Two readings of the same year</h2>
+
+      <div class="entry">
+        <p class="entry-meta">Check Point Research &middot; Jul 2026 <span class="tag">industry report</span></p>
+        <h3><a href="https://research.checkpoint.com/2026/ai-security-report-2026/">Annual AI Security Report 2026</a></h3>
+        <p>Check Point's thesis is that AI has crossed from assistant to operator — it now does hands-on work inside live intrusions rather than helping prepare them. The report's opening case study walks through one operator breaching nine Mexican government agencies with coding agents, and separately documents an 88,000-line command-and-control framework built in under a week.</p>
+        <p>For someone doing binary analysis the detail that matters is that the AI involvement is often invisible in the finished artifact. If the malware you're staring at was generated rather than written, provenance signals we've relied on for attribution get considerably weaker.</p>
+      </div>
+
+      <div class="entry">
+        <p class="entry-meta">Google Threat Intelligence Group &middot; May 2026 <span class="tag">threat intel</span></p>
+        <h3><a href="https://cloud.google.com/blog/topics/threat-intelligence/ai-vulnerability-exploitation-initial-access">Adversaries Leverage AI for Vulnerability Exploitation, Augmented Operations, and Initial Access</a></h3>
+        <p>Read this next to the report above, because it pulls in the other direction on one specific point: GTIG observed that through early 2026 threat actors had <em>not</em> achieved breakthrough capabilities against the core safety logic of frontier models. What they did instead was fall back on ordinary supply chain tactics.</p>
+        <p>I find the pairing more informative than either report alone. Capability is scaling on the operational side — automation, volume, speed — while the direct model-subversion story is less dramatic than the discourse suggests. Those are different problems and they want different defenses.</p>
+      </div>
+
+      <footer>&copy; 2026 Yiyue Zhang &middot; no frameworks, no trackers &middot; view-source welcome</footer>
+    </div>
+  </section>
+
+</main>
+<script src="site.js"></script>
+</body>
+</html>
